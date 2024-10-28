@@ -1,9 +1,13 @@
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 public class Generador {
-    private static final int NUMEROCOCHES = 15;
-    private static final int NUMEROCAMIONES = 15;
+   // private static final int NUMEROCOCHES = 15;
+   // private static final int NUMEROCAMIONES = 15;
     private static final int NUMEROVEHICULOS = 30;
 
     public static void main(String[] args) throws InterruptedException {
@@ -18,40 +22,26 @@ public class Generador {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        Thread[] coches = new Thread[NUMEROCOCHES];
-        Camion[] camiones = new Camion[NUMEROCAMIONES];
-        Thread[] camionThreads = new Thread[NUMEROCAMIONES];
-
-        for (int i = 0; i < NUMEROCOCHES; i++) {
-            coches[i] = new Thread(new Coche(i, gasolinera, canvas, true));
-        }
-
-        for (int i = 0; i < NUMEROCAMIONES; i++) {
-            camiones[i] = new Camion(i + NUMEROCOCHES, gasolinera, canvas, false);
-            camionThreads[i] = new Thread(camiones[i]);
-        }
-
-        int numeroCamionesLanzados = 0, numeroCochesLanzados = 0;
+        ArrayList<Thread> vehiculos = new ArrayList<>();
 
         for (int i = 0; i < NUMEROVEHICULOS; i++) {
-            if (rd.nextBoolean() && numeroCamionesLanzados < NUMEROCAMIONES) {
-                camionThreads[numeroCamionesLanzados].start(); // Iniciar hilo de camión
-                numeroCamionesLanzados++;
-            } else if (numeroCochesLanzados < NUMEROCOCHES) {
-                coches[numeroCochesLanzados].start(); // Iniciar hilo de coche
-                numeroCochesLanzados++;
+            if(rd.nextBoolean()) {
+                Coche coche = new Coche(i, gasolinera, canvas, true);
+                vehiculos.add(coche);
+            } else {
+                Camion camion = new Camion(i, gasolinera, canvas, false);
+                vehiculos.add(new Thread(camion));
             }
+        }
 
-            Thread.sleep(500); // Esperar antes de lanzar el siguiente vehículo
+        for (Thread v : vehiculos) {
+            v.start();
+            sleep(500);
         }
 
         // Esperar a que todos los coches y camiones terminen
-        for (int i = 0; i < numeroCochesLanzados; i++) {
-            coches[i].join();
-        }
-
-        for (int i = 0; i < numeroCamionesLanzados; i++) {
-            camionThreads[i].join();
+        for (Thread v : vehiculos) {
+            v.join();
         }
 
         System.out.println("Termina MAIN.");

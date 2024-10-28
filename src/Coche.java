@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class Coche implements Runnable {
+public class Coche extends Thread {
     private final int id;
     private final Gasolinera gasolinera;
     private final CanvasGasolinera canvas;
