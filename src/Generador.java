@@ -36,7 +36,7 @@ public class Generador {
 
         for (Thread v : vehiculos) {
             v.start();
-            sleep(500);
+            sleep(rd.nextInt(1000)+1000);
         }
 
         // Esperar a que todos los coches y camiones terminen
